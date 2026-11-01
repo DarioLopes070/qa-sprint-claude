@@ -2,6 +2,8 @@ from flask import Flask
 from qa_sprint.extensions import db, csrf
 from qa_sprint.main import main_bp
 from qa_sprint.projects import projects_bp
+from qa_sprint.testcases import testcases_bp
+from qa_sprint.bugs import bugs_bp
 from qa_sprint.commands import init_app as init_commands
 from config import config
 
@@ -21,6 +23,8 @@ def create_app(config_name=None):
     # Registra blueprints
     app.register_blueprint(main_bp)
     app.register_blueprint(projects_bp)
+    app.register_blueprint(testcases_bp)
+    app.register_blueprint(bugs_bp)
 
     # Registra comandos CLI
     init_commands(app)

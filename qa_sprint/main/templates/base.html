@@ -308,6 +308,34 @@
             font-size: 0.9rem;
         }
 
+        .stat-card.border-success {
+            border-color: var(--bs-success) !important;
+        }
+
+        .stat-card.border-danger {
+            border-color: var(--bs-danger) !important;
+        }
+
+        .stat-card.border-warning {
+            border-color: var(--bs-warning) !important;
+        }
+
+        .stat-card.border-info {
+            border-color: var(--bs-info) !important;
+        }
+
+        .stat-card.border-primary {
+            border-color: var(--bs-primary) !important;
+        }
+
+        .stat-card.border-secondary {
+            border-color: var(--bs-secondary) !important;
+        }
+
+        .stat-card.border-dark {
+            border-color: var(--bs-dark) !important;
+        }
+
         /* Footer */
         footer {
             background-color: #131517;
@@ -450,6 +478,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('projects.list') }}">
                             <i class="bi bi-folder me-1"></i>Projetos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('testcases.list') }}">
+                            <i class="bi bi-list-check me-1"></i>Casos de Teste
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('bugs.list') }}">
+                            <i class="bi bi-bug me-1"></i>Bugs
                         </a>
                     </li>
                 </ul>
