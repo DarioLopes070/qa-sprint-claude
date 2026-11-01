@@ -6,7 +6,32 @@
 <div class="row mb-4">
     <div class="col-12">
         <h1 class="h3 mb-1"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h1>
-        <p class="text-muted">Visão geral dos projetos</p>
+        <p class="text-muted">Visão geral dos indicadores de QA</p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <label for="project_id" class="form-label">Filtrar por Projeto</label>
+                <select name="project_id" id="project_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todos os projetos</option>
+                    {% for project in projects %}
+                        <option value="{{ project.id }}" {% if selected_project == project.id %}selected{% endif %}>
+                            {{ project.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                {% if selected_project %}
+                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i>Limpar filtro
+                    </a>
+                {% endif %}
+            </div>
+        </form>
     </div>
 </div>
 
@@ -32,19 +57,124 @@
             <div class="stat-label">Projetos Arquivados</div>
         </div>
     </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon text-info"><i class="bi bi-list-check"></i></div>
+            <div class="stat-value">{{ total_test_cases }}</div>
+            <div class="stat-label">Casos de Teste</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="stat-card border-success">
+            <div class="stat-icon text-success"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="stat-value">{{ passed_count }}</div>
+            <div class="stat-label">Testes Aprovados</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="stat-card border-danger">
+            <div class="stat-icon text-danger"><i class="bi bi-x-circle-fill"></i></div>
+            <div class="stat-value">{{ failed_count }}</div>
+            <div class="stat-label">Testes Reprovados</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="stat-card border-warning">
+            <div class="stat-icon text-warning"><i class="bi bi-pause-circle-fill"></i></div>
+            <div class="stat-value">{{ blocked_count }}</div>
+            <div class="stat-label">Testes Bloqueados</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="stat-card border-secondary">
+            <div class="stat-icon text-secondary"><i class="bi bi-dash-circle-fill"></i></div>
+            <div class="stat-value">{{ not_executed_count }}</div>
+            <div class="stat-label">Não Executados</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="stat-card border-danger">
+            <div class="stat-icon text-danger"><i class="bi bi-bug-fill"></i></div>
+            <div class="stat-value">{{ total_bugs }}</div>
+            <div class="stat-label">Total de Bugs</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="stat-card border-primary">
+            <div class="stat-icon text-primary"><i class="bi bi-bug"></i></div>
+            <div class="stat-value">{{ bugs_open }}</div>
+            <div class="stat-label">Bugs Abertos</div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="stat-card border-info">
+            <div class="stat-icon text-info"><i class="bi bi-arrow-clockwise"></i></div>
+            <div class="stat-value">{{ bugs_in_progress }}</div>
+            <div class="stat-label">Em Andamento</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="stat-card border-success">
+            <div class="stat-icon text-success"><i class="bi bi-check-circle"></i></div>
+            <div class="stat-value">{{ bugs_resolved }}</div>
+            <div class="stat-label">Bugs Resolvidos</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Bugs por Severidade</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    {% for severity, count in bugs_by_severity.items() %}
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-card border-{{ 'success' if severity == 'baixa' else 'warning' if severity == 'média' else 'danger' if severity == 'alta' else 'critical' }}">
+                                <div class="stat-icon text-{{ 'success' if severity == 'baixa' else 'warning' if severity == 'média' else 'danger' if severity == 'alta' else 'critical' }}">
+                                    <i class="bi bi-bug"></i>
+                                </div>
+                                <div class="stat-value">{{ count }}</div>
+                                <div class="stat-label">{{ severity|title }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Ações Rápidas</h5>
-                <a href="{{ url_for('projects.create') }}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus-lg me-1"></i>Novo Projeto
-                </a>
+                <div class="btn-group">
+                    <a href="{{ url_for('projects.create') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-folder-plus me-1"></i>Novo Projeto
+                    </a>
+                    <a href="{{ url_for('testcases.create') }}" class="btn btn-info btn-sm">
+                        <i class="bi bi-list-check me-1"></i>Novo Caso de Teste
+                    </a>
+                    <a href="{{ url_for('bugs.create') }}" class="btn btn-danger btn-sm">
+                        <i class="bi bi-bug me-1"></i>Novo Bug
+                    </a>
+                </div>
             </div>
             <div class="card-body">
-                <p class="text-muted mb-0">Comece criando seu primeiro projeto ou acesse a lista completa.</p>
+                <p class="text-muted mb-0">Gerencie seus projetos, casos de teste e bugs de forma integrada.</p>
             </div>
         </div>
     </div>

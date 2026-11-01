@@ -261,6 +261,34 @@
         .bg-info { background-color: var(--bs-info) !important; color: #1a1d21 !important; }
         .bg-primary { background-color: var(--bs-primary) !important; color: var(--bs-primary-text) !important; }
 
+        /* Custom surface-secondary for detail views - dark background with proper text contrast */
+        .bg-body-secondary {
+            background-color: var(--bs-surface-bg) !important;
+            color: var(--bs-body-color) !important;
+        }
+
+        /* Preformatted text styling for detail views */
+        pre, .pre-style {
+            color: var(--bs-body-color) !important;
+            background-color: var(--bs-surface-bg) !important;
+            border: 1px solid var(--bs-surface-border) !important;
+        }
+
+        pre::-webkit-scrollbar,
+        .pre-style::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        pre::-webkit-scrollbar-track,
+        .pre-style::-webkit-scrollbar-track {
+            background: var(--bs-surface-hover) !important;
+        }
+        pre::-webkit-scrollbar-thumb,
+        .pre-style::-webkit-scrollbar-thumb {
+            background: var(--bs-body-color-muted) !important;
+            border-radius: 3px;
+        }
+
         /* Estados vazios */
         .empty-state {
             text-align: center;
@@ -306,6 +334,57 @@
         .stat-card .stat-label {
             color: var(--bs-body-color-muted);
             font-size: 0.9rem;
+        }
+
+        .stat-card.border-success {
+            border-color: var(--bs-success) !important;
+        }
+
+        .stat-card.border-danger {
+            border-color: var(--bs-danger) !important;
+        }
+
+        .stat-card.border-warning {
+            border-color: var(--bs-warning) !important;
+        }
+
+        .stat-card.border-info {
+            border-color: var(--bs-info) !important;
+        }
+
+        .stat-card.border-primary {
+            border-color: var(--bs-primary) !important;
+        }
+
+        .stat-card.border-secondary {
+            border-color: var(--bs-secondary) !important;
+        }
+
+        .stat-card.border-dark {
+            border-color: var(--bs-dark) !important;
+        }
+
+        /* Critical severity custom styling */
+        :root {
+            --severity-critical: #C084FC;
+        }
+
+        .stat-card.border-critical {
+            border-color: var(--severity-critical) !important;
+        }
+
+        .text-critical {
+            color: var(--severity-critical) !important;
+        }
+
+        .stat-card.border-critical .stat-icon.text-critical {
+            color: var(--severity-critical) !important;
+        }
+
+        /* Badge for critical severity on bugs pages */
+        .badge-critical {
+            background-color: var(--severity-critical) !important;
+            color: #1a1d21 !important;
         }
 
         /* Footer */
@@ -450,6 +529,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('projects.list') }}">
                             <i class="bi bi-folder me-1"></i>Projetos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('testcases.list') }}">
+                            <i class="bi bi-list-check me-1"></i>Casos de Teste
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('bugs.list') }}">
+                            <i class="bi bi-bug me-1"></i>Bugs
                         </a>
                     </li>
                 </ul>
