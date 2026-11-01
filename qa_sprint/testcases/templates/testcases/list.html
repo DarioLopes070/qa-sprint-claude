@@ -76,7 +76,7 @@
                                         <span class="badge bg-secondary">Não executado</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ test_case.created_at.strftime('%d/%m/%Y') }}</td>
+                                <td class="text-muted">{{ test_case.created_at.strftime('%d/%m/%Y') }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
                                         <a href="{{ url_for('testcases.detail', test_case_id=test_case.id) }}" class="btn btn-outline-primary">

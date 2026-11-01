@@ -28,11 +28,11 @@
                 <p><strong>Projeto:</strong> <a href="{{ url_for('testcases.list', project_id=test_case.project_id) }}">{{ test_case.project.name }}</a></p>
                 <p><strong>Passos de Execução:</strong></p>
                 <div class="bg-body-secondary p-3 rounded">
-                    <pre class="mb-0" style="white-space: pre-wrap;">{{ test_case.steps }}</pre>
+                    <pre class="mb-0 pre-style">{{ test_case.steps }}</pre>
                 </div>
                 <p class="mt-3"><strong>Resultado Esperado:</strong></p>
                 <div class="bg-body-secondary p-3 rounded">
-                    <pre class="mb-0" style="white-space: pre-wrap;">{{ test_case.expected_result }}</pre>
+                    <pre class="mb-0 pre-style">{{ test_case.expected_result }}</pre>
                 </div>
                 <p class="mt-3 text-muted"><small>Criado em: {{ test_case.created_at.strftime('%d/%m/%Y %H:%M') }}</small></p>
             </div>

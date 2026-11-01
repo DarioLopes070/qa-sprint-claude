@@ -90,7 +90,7 @@
                                         {{ bug.status }}
                                     </span>
                                 </td>
-                                <td>{{ bug.created_at.strftime('%d/%m/%Y') }}</td>
+                                <td class="text-muted">{{ bug.created_at.strftime('%d/%m/%Y') }}</td>
                                 <td>
                                     <div class="btn-group btn-group-sm" role="group">
                                         <a href="{{ url_for('bugs.detail', bug_id=bug.id) }}" class="btn btn-outline-primary">
