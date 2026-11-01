@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template, abort, request
+from sqlalchemy import func
 from qa_sprint.models import Project, TestCase, TestExecution, Bug
 from qa_sprint.main.forms import EmptyForm
 from qa_sprint.main import main_bp
+from qa_sprint.extensions import db
 
 
 @main_bp.route('/')
@@ -18,15 +20,38 @@ def dashboard():
         test_cases_query = test_cases_query.filter_by(project_id=project_id)
     total_test_cases = test_cases_query.count()
 
-    # Test Executions
-    exec_query = TestExecution.query.join(TestCase)
+    # Test Executions - count only latest execution per TestCase
+    # Use window function to guarantee one execution per TestCase, tie-breaking by id
+    row_number = func.row_number().over(
+        partition_by=TestExecution.test_case_id,
+        order_by=[TestExecution.executed_at.desc(), TestExecution.id.desc()]
+    ).label('rn')
+
+    ranked_subq = db.session.query(
+        TestExecution.id.label('exec_id'),
+        row_number
+    ).subquery('ranked_exec')
+
+    base_execs_query = db.session.query(TestExecution).\
+        join(ranked_subq, TestExecution.id == ranked_subq.c.exec_id).\
+        filter(ranked_subq.c.rn == 1).\
+        join(TestCase, TestCase.id == TestExecution.test_case_id)
+
     if project_id:
-        exec_query = exec_query.filter(TestCase.project_id == project_id)
-    total_executions = exec_query.count()
-    passed_count = exec_query.filter(TestExecution.status == 'aprovado').count()
-    failed_count = exec_query.filter(TestExecution.status == 'reprovado').count()
-    blocked_count = exec_query.filter(TestExecution.status == 'bloqueado').count()
-    not_executed_count = total_test_cases - exec_query.with_entities(TestExecution.test_case_id).distinct().count()
+        base_execs_query = base_execs_query.filter(TestCase.project_id == project_id)
+
+    passed_count = base_execs_query.filter(TestExecution.status == 'aprovado').count()
+    failed_count = base_execs_query.filter(TestExecution.status == 'reprovado').count()
+    blocked_count = base_execs_query.filter(TestExecution.status == 'bloqueado').count()
+
+    executed_test_cases_q = db.session.query(TestExecution.test_case_id).\
+        join(ranked_subq, TestExecution.id == ranked_subq.c.exec_id).\
+        filter(ranked_subq.c.rn == 1).\
+        join(TestCase, TestCase.id == TestExecution.test_case_id)
+    if project_id:
+        executed_test_cases_q = executed_test_cases_q.filter(TestCase.project_id == project_id)
+    executed_test_cases_count = executed_test_cases_q.distinct().count()
+    not_executed_count = total_test_cases - executed_test_cases_count
 
     # Bugs
     bugs_query = Bug.query

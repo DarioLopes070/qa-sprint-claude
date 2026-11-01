@@ -76,8 +76,9 @@ A suíte de testes inclui:
 - **31 testes** originais (projetos, dashboard)
 - **16 testes** de TestCase e TestExecution (modelos, validações, relacionamentos, cascade delete)
 - **19 testes** de Bug e relacionamentos Project (modelos, validações, contagens, cascade delete)
+- **28 testes** de integração para rotas de Test Cases e Bugs (CRUD, execuções, validação, CSRF, redirects, flash, 404, cascade)
 
-**Total: 66 testes passando**
+**Total: 94 testes passando**
 
 Áreas cobertas:
 - Modelos e validações
