@@ -1,7 +1,16 @@
 # QA Sprint
 
-Sistema web local para gestão de projetos, casos de teste e bugs.  
+Sistema web local completo para gestão de QA, incluindo projetos, casos de teste, execuções e bugs.  
 Stack: Python + Flask, SQLite + SQLAlchemy, Jinja2 + Bootstrap 5.
+
+**Funcionalidades implementadas:**
+- Gestão completa de Projetos (CRUD)
+- Casos de teste com passos, resultado esperado e associação a projetos
+- Registro de execuções de testes com histórico (aprovado, reprovado, bloqueado)
+- Gestão completa de Bugs com severidade e status
+- Dashboard com indicadores reais calculados a partir do banco de dados
+- Filtro por projeto em todas as listagens
+- Tema escuro com acessibilidade WCAG AA
 
 ---
 
@@ -61,6 +70,24 @@ pytest --cov=qa_sprint --cov-report=term-missing
 
 Os testes usam um banco de dados **temporário em memória** (SQLite `:memory:`), não tocando no banco de desenvolvimento.
 
+### Cobertura Atual
+
+A suíte de testes inclui:
+- **31 testes** originais (projetos, dashboard)
+- **16 testes** de TestCase e TestExecution (modelos, validações, relacionamentos, cascade delete)
+- **19 testes** de Bug e relacionamentos Project (modelos, validações, contagens, cascade delete)
+
+**Total: 66 testes passando**
+
+Áreas cobertas:
+- Modelos e validações
+- CRUD de Projetos
+- CRUD de Casos de Teste
+- Registro de Execuções
+- CRUD de Bugs
+- Relacionamentos e exclusões em cascata
+- Indicadores do dashboard
+
 ---
 
 ## Estrutura do Projeto
@@ -77,23 +104,45 @@ qa-sprint-claude/
 ├── qa_sprint/
 │   ├── __init__.py           (application factory)
 │   ├── extensions.py         (db, csrf)
-│   ├── models.py             (modelo Project)
+│   ├── models.py             (Project, TestCase, TestExecution, Bug)
 │   ├── commands.py           (comando flask init-db)
 │   ├── main/
 │   │   ├── __init__.py
-│   │   ├── routes.py         (dashboard, 404, 500)
+│   │   ├── routes.py         (dashboard com indicadores)
 │   │   ├── forms.py
 │   │   └── templates/
 │   │       ├── base.html
 │   │       ├── dashboard.html
 │   │       ├── 404.html
 │   │       └── 500.html
-│   └── projects/
+│   ├── projects/
+│   │   ├── __init__.py
+│   │   ├── routes.py         (CRUD de projetos)
+│   │   ├── forms.py
+│   │   └── templates/
+│   │       └── projects/
+│   │           ├── list.html
+│   │           ├── create.html
+│   │           ├── detail.html
+│   │           ├── edit.html
+│   │           └── delete.html
+│   ├── testcases/
+│   │   ├── __init__.py
+│   │   ├── routes.py         (CRUD de casos de teste + execuções)
+│   │   ├── forms.py
+│   │   └── templates/
+│   │       └── testcases/
+│   │           ├── list.html
+│   │           ├── create.html
+│   │           ├── detail.html
+│   │           ├── edit.html
+│   │           └── delete.html
+│   └── bugs/
 │       ├── __init__.py
-│       ├── routes.py         (CRUD de projetos)
+│       ├── routes.py         (CRUD de bugs)
 │       ├── forms.py
 │       └── templates/
-│           └── projects/
+│           └── bugs/
 │               ├── list.html
 │               ├── create.html
 │               ├── detail.html
@@ -104,7 +153,9 @@ qa-sprint-claude/
     ├── conftest.py           (fixtures pytest)
     ├── test_models.py
     ├── test_projects_routes.py
-    └── test_dashboard.py
+    ├── test_dashboard.py
+    ├── test_testcase_model.py
+    └── test_bug_model.py
 ```
 
 ---
@@ -112,10 +163,13 @@ qa-sprint-claude/
 ## Funcionalidades Implementadas
 
 ### Dashboard
-- Contagem total de projetos
-- Contagem de projetos ativos
-- Contagem de projetos arquivados
-- Botão para criar novo projeto
+- Filtro por projeto
+- Total de projetos, ativos e arquivados
+- Total de casos de teste
+- Testes aprovados, reprovados, bloqueados e não executados
+- Total de bugs, abertos, em andamento e resolvidos
+- Bugs por severidade (baixa, média, alta, crítica)
+- Ações rápidas para criar projetos, casos de teste e bugs
 
 ### CRUD de Projetos
 | Operação | Rota | Método |
@@ -126,20 +180,47 @@ qa-sprint-claude/
 | Editar | `/projetos/<id>/editar` | GET, POST |
 | Excluir | `/projetos/<id>/excluir` | GET (confirma), POST (executa) |
 
+### Casos de Teste
+| Operação | Rota | Método |
+|----------|------|--------|
+| Listar | `/testcases/` | GET |
+| Criar | `/testcases/novo` | GET, POST |
+| Detalhes | `/testcases/<id>` | GET |
+| Editar | `/testcases/<id>/editar` | GET, POST |
+| Excluir | `/testcases/<id>/excluir` | GET (confirma), POST (executa) |
+| Executar | `/testcases/<id>/executar` | POST |
+
+**Campos:** Título, Projeto (obrigatório), Passos de Execução, Resultado Esperado
+**Execuções:** Status (aprovado/reprovado/bloqueado), Observações, Histórico ordenado por data
+
+### Bugs
+| Operação | Rota | Método |
+|----------|------|--------|
+| Listar | `/bugs/` | GET |
+| Criar | `/bugs/novo` | GET, POST |
+| Detalhes | `/bugs/<id>` | GET |
+| Editar | `/bugs/<id>/editar` | GET, POST |
+| Excluir | `/bugs/<id>/excluir` | GET (confirma), POST (executa) |
+
+**Campos:** Título, Descrição, Projeto (obrigatório), Severidade (baixa/média/alta/crítica), Status (aberto/em andamento/resolvido) |
+
 ### Validações
-- **Nome**: obrigatório, máx. 120 caracteres, espaços nas extremidades removidos, único
-- **Descrição**: opcional, máx. 2000 caracteres
-- **Status**: apenas "Ativo" ou "Arquivado" (padrão: "Ativo")
+- **Projetos**: Nome obrigatório, máx. 120 chars, único, espaços removidos. Status: Ativo/Arquivado
+- **Casos de Teste**: Título obrigatório, máx 200 chars. Passos e resultado esperado obrigatórios. Projeto obrigatório
+- **Execuções**: Status obrigatório (aprovado/reprovado/bloqueado). Caso de teste obrigatório
+- **Bugs**: Título obrigatório, máx 200 chars. Descrição obrigatória. Projeto obrigatório. Severidade e status obrigatórios
 - **CSRF**: proteção em todos os formulários
-- **404**: retornado para projetos inexistentes
+- **404**: retornado para recursos inexistentes
 
 ### Interface
 - Tema escuro (dark mode) consistente
 - Layout responsivo com Bootstrap 5
-- Navegação: Dashboard ↔ Projetos
+- Navegação: Dashboard, Projetos, Casos de Teste, Bugs
 - Mensagens de sucesso/erro em português
 - Estados vazios informativos
 - Paginação na listagem (10 por página)
+- Filtro por projeto em todas as listagens
+- Badges coloridos por status/severidade
 
 ---
 
