@@ -24,7 +24,7 @@
             <div class="col-md-6">
                 <p><strong>Projeto:</strong> <a href="{{ url_for('bugs.list', project_id=bug.project_id) }}">{{ bug.project.name }}</a></p>
                 <p><strong>Severidade:</strong>
-                    <span class="badge bg-{{ 'success' if bug.severity == 'baixa' else 'warning' if bug.severity == 'média' else 'danger' if bug.severity == 'alta' else 'dark' }}">
+                    <span class="badge {{ 'badge-critical' if bug.severity == 'crítica' else 'bg-' + ('success' if bug.severity == 'baixa' else 'warning' if bug.severity == 'média' else 'danger') }}">
                         {{ bug.severity }}
                     </span>
                 </p>
