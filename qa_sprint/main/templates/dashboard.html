@@ -141,8 +141,8 @@
                 <div class="row text-center">
                     {% for severity, count in bugs_by_severity.items() %}
                         <div class="col-6 col-md-3 mb-3">
-                            <div class="stat-card border-{{ 'success' if severity == 'baixa' else 'warning' if severity == 'média' else 'danger' if severity == 'alta' else 'dark' }}">
-                                <div class="stat-icon text-{{ 'success' if severity == 'baixa' else 'warning' if severity == 'média' else 'danger' if severity == 'alta' else 'dark' }}">
+                            <div class="stat-card border-{{ 'success' if severity == 'baixa' else 'warning' if severity == 'média' else 'danger' if severity == 'alta' else 'critical' }}">
+                                <div class="stat-icon text-{{ 'success' if severity == 'baixa' else 'warning' if severity == 'média' else 'danger' if severity == 'alta' else 'critical' }}">
                                     <i class="bi bi-bug"></i>
                                 </div>
                                 <div class="stat-value">{{ count }}</div>

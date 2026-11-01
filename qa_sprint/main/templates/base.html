@@ -364,6 +364,23 @@
             border-color: var(--bs-dark) !important;
         }
 
+        /* Critical severity custom styling */
+        :root {
+            --severity-critical: #C084FC;
+        }
+
+        .stat-card.border-critical {
+            border-color: var(--severity-critical) !important;
+        }
+
+        .text-critical {
+            color: var(--severity-critical) !important;
+        }
+
+        .stat-card.border-critical .stat-icon.text-critical {
+            color: var(--severity-critical) !important;
+        }
+
         /* Footer */
         footer {
             background-color: #131517;
