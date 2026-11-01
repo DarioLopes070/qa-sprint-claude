@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Caso de Teste - QA Sprint{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-trash me-2"></i>Excluir Caso de Teste</h1>
+    <a href="{{ url_for('testcases.detail', test_case_id=test_case.id) }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Voltar
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="alert alert-danger" role="alert">
+            <h5><i class="bi bi-exclamation-triangle me-2"></i>Atenção!</h5>
+            <p>Esta ação não pode ser desfeita. Todos os registros de execução associados também serão removidos.</p>
+        </div>
+
+        <h5>Caso de Teste: {{ test_case.title }}</h5>
+        <p class="text-muted">Projeto: {{ test_case.project.name }}</p>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="d-flex gap-2 mt-4">
+                {{ form.confirm() }}
+                {{ form.cancel() }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
