@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Bugs - QA Sprint{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-bug me-2"></i>Bugs</h1>
+    <a href="{{ url_for('bugs.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Novo Bug
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label for="project_id" class="form-label">Projeto</label>
+                <select name="project_id" id="project_id" class="form-select">
+                    <option value="">Todos</option>
+                    {% for project in projects %}
+                        <option value="{{ project.id }}" {% if selected_project == project.id %}selected{% endif %}>
+                            {{ project.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="status" class="form-label">Status</label>
+                <select name="status" id="status" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="aberto" {% if selected_status == 'aberto' %}selected{% endif %}>Aberto</option>
+                    <option value="em andamento" {% if selected_status == 'em andamento' %}selected{% endif %}>Em Andamento</option>
+                    <option value="resolvido" {% if selected_status == 'resolvido' %}selected{% endif %}>Resolvido</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="severity" class="form-label">Severidade</label>
+                <select name="severity" id="severity" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="baixa" {% if selected_severity == 'baixa' %}selected{% endif %}>Baixa</option>
+                    <option value="média" {% if selected_severity == 'média' %}selected{% endif %}>Média</option>
+                    <option value="alta" {% if selected_severity == 'alta' %}selected{% endif %}>Alta</option>
+                    <option value="crítica" {% if selected_severity == 'crítica' %}selected{% endif %}>Crítica</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-funnel me-1"></i>Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if bugs %}
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Projeto</th>
+                            <th>Severidade</th>
+                            <th>Status</th>
+                            <th>Data Criação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bug in bugs %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('bugs.detail', bug_id=bug.id) }}" class="text-decoration-none fw-medium">
+                                        {{ bug.title }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('bugs.list', project_id=bug.project_id) }}" class="text-decoration-none">
+                                        {{ bug.project.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if bug.severity == 'baixa' else 'warning' if bug.severity == 'média' else 'danger' if bug.severity == 'alta' else 'dark' }}">
+                                        {{ bug.severity }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'primary' if bug.status == 'aberto' else 'info' if bug.status == 'em andamento' else 'success' }}">
+                                        {{ bug.status }}
+                                    </span>
+                                </td>
+                                <td>{{ bug.created_at.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('bugs.detail', bug_id=bug.id) }}" class="btn btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('bugs.edit', bug_id=bug.id) }}" class="btn btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{{ url_for('bugs.delete', bug_id=bug.id) }}" class="btn btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if pagination.pages > 1 %}
+        <nav aria-label="Navegação de páginas" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('bugs.list', page=pagination.prev_num, project_id=selected_project, status=selected_status, severity=selected_severity) }}">Anterior</a>
+                    </li>
+                {% endif %}
+                {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('bugs.list', page=page_num, project_id=selected_project, status=selected_status, severity=selected_severity) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+                {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('bugs.list', page=pagination.next_num, project_id=selected_project, status=selected_status, severity=selected_severity) }}">Próximo</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="empty-state">
+        <i class="bi bi-bug"></i>
+        <h3>Nenhum bug encontrado</h3>
+        <p>Comece registrando um novo bug.</p>
+        <a href="{{ url_for('bugs.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Novo Bug
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
