@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Projeto - QA Sprint{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-trash me-2"></i>Confirmar Exclusão</h5>
+            </div>
+            <div class="card-body">
+                <p class="lead">Tem certeza que deseja excluir o projeto <strong>{{ project.name }}</strong>?</p>
+                <p class="text-muted">Esta ação não pode ser desfeita.</p>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="d-flex gap-2">
+                        {{ form.confirm(class='btn btn-danger') }}
+                        {{ form.cancel(class='btn btn-secondary') }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

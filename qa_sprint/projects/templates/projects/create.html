@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Novo Projeto - QA Sprint{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Novo Projeto</h5>
+                <a href="{{ url_for('projects.list') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Voltar
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class='form-label') }}
+                        {{ form.name(class='form-control' + (' is-invalid' if form.name.errors else '')) }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">Obrigatório, máximo 120 caracteres.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class='form-label') }}
+                        {{ form.description(class='form-control' + (' is-invalid' if form.description.errors else '')) }}
+                        {% for error in form.description.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">Opcional, máximo 2000 caracteres.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.status.label(class='form-label') }}
+                        {{ form.status(class='form-select' + (' is-invalid' if form.status.errors else '')) }}
+                        {% for error in form.status.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class='btn btn-primary') }}
+                        <a href="{{ url_for('projects.list') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
